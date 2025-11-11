@@ -1,4 +1,4 @@
-package rfc9457_test
+package test
 
 import (
 	"encoding/json"
