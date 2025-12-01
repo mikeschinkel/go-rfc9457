@@ -25,7 +25,8 @@ GO := GOEXPERIMENT=$(GOEXPERIMENT) go
 test: test-unit
 
 test-unit:
-	$(GO) test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+	@$(GO) test -v -race -coverprofile=test/coverage.txt -covermode=atomic ./... || exit 1
+	@cd test && $(GO) test -v -race ./... || exit 1
 
 # Run fuzz corpus regression tests
 test-corpus:
@@ -46,9 +47,11 @@ fmt:
 vet:
 	$(GO) vet ./...
 
-# Tidy go modules
+# Run go mod tidy
 tidy:
-	$(GO) mod tidy
+	@echo "Running go mod tidy for main package..."
+	@$(GO) mod tidy || exit 1
+	@echo "Running go mod tidy for test..."
 	@cd test && $(GO) mod tidy || exit 1
 
 # Build the package
@@ -61,8 +64,8 @@ examples:
 	for example in basic_usage; do \
 		echo "Building example: $$example"; \
 		cd examples/$$example && \
-		go mod init example 2>/dev/null || true && \
-		go mod edit -replace github.com/mikeschinkel/go-rfc9457=../.. && \
+		$(GO) mod init example 2>/dev/null || true && \
+		$(GO) mod edit -replace github.com/mikeschinkel/go-rfc9457=../.. && \
 		$(GO) mod tidy && \
 		$(GO) build -v . || exit 1; \
 		cd ../..; \
@@ -72,6 +75,8 @@ examples:
 clean:
 	$(GO) clean
 	rm -f coverage.txt
+	rm -rf bin
+	cd test && $(GO) clean
 
 # Run all CI checks locally
 ci: fmt vet lint test-all
