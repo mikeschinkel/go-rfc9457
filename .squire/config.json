@@ -1,0 +1,22 @@
+{
+  "modules": {
+    "./examples/basic_usage": {
+      "name": "basic_usage",
+      "role": [
+        "lib"
+      ]
+    },
+    "./": {
+      "name": "go-rfc9457",
+      "role": [
+        "lib"
+      ]
+    },
+    "./test": {
+      "name": "test",
+      "role": [
+        "test"
+      ]
+    }
+  }
+}
